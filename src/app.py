@@ -8,7 +8,10 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Post
+from models.index import db, Post, User
+from domain.user.route import user_route
+
+
 #from models import Person
 
 app = Flask(__name__)
@@ -39,29 +42,9 @@ def sitemap():
 
 
 #----------------------------------------------------------------------------------------------------------------------------#
-##RUTAS USER-------------------------
-#GET post
-@app.route('/user', methods=['GET'])
-def get_all_users():
-    all_users = User.query.all()
-    serialize_users = [user.serialize() for user in all_users]
-    return jsonify(serialize_users ), 200
-
-@app.route('/user/<int:id>', methods= ['GET'])
-def get_user(id):
-    print(id)
-    user = User.query.get(id)
-    return jsonify(user.serialize()), 200
+user_route(app)
 
 
-#POST
-@app.route('/user', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    new_user = User(email = data['email'], password = data['password'], username = data['username'])
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(new_user.serialize()), 200
 
 ##RUTAS POST-------------------------
 
